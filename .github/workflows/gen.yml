@@ -24,10 +24,13 @@ jobs:
         working-directory: pages
       - run: git add -v alias.txt
         working-directory: pages
+      - run: echo "CHANGES=$(git diff --cached --name-only -- alias.txt)" >> $GITHUB_ENV
+        working-directory: pages
       - run: |
           git commit -m "Auto-build ${{ github.ref }} on $(date)
           Source commit ${{ github.sha }}
           "
         working-directory: pages
+        if: ${{ contains(env.CHANGES, 'alias.txt') }}
       - run: git push
         working-directory: pages
