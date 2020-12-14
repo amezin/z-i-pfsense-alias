@@ -1,0 +1,33 @@
+name: gen
+
+on:
+  push:
+  schedule:
+    - cron:  '0 */6 * * *'
+
+jobs:
+  gen:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: src
+      - uses: actions/checkout@v2
+        with:
+          ref: gh-pages
+          path: pages
+      - run: curl -O https://raw.githubusercontent.com/zapret-info/z-i/master/dump.csv
+      - run: python3 src/genalias.py -o pages/alias.txt dump.csv
+      - run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        working-directory: pages
+      - run: git add -v alias.txt
+        working-directory: pages
+      - run: |
+          git commit -m "Auto-build ${{ github.ref }} on $(date)
+          Source commit ${{ github.sha }}
+          "
+        working-directory: pages
+      - run: git push
+        working-directory: pages
