@@ -24,7 +24,7 @@ jobs:
         working-directory: pages
       - run: git add -v alias.txt alias6.txt
         working-directory: pages
-      - run: echo "CHANGES=$(git diff --cached --name-only)" >> $GITHUB_ENV
+      - run: echo "CHANGES=$(git diff --cached --name-only | tr '\n' ' ')" >> $GITHUB_ENV
         working-directory: pages
       - run: |
           git commit -m "Auto-build ${{ github.ref }} on $(date)
