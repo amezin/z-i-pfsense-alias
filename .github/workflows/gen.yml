@@ -17,20 +17,20 @@ jobs:
           ref: gh-pages
           path: pages
       - run: curl -O https://raw.githubusercontent.com/zapret-info/z-i/master/dump.csv
-      - run: python3 src/genalias.py -o pages/alias.txt dump.csv
+      - run: python3 src/genalias.py -o pages/alias.txt -6 pages/alias6.txt dump.csv
       - run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
         working-directory: pages
-      - run: git add -v alias.txt
+      - run: git add -v alias.txt alias6.txt
         working-directory: pages
-      - run: echo "CHANGES=$(git diff --cached --name-only -- alias.txt)" >> $GITHUB_ENV
+      - run: echo "CHANGES=$(git diff --cached --name-only)" >> $GITHUB_ENV
         working-directory: pages
       - run: |
           git commit -m "Auto-build ${{ github.ref }} on $(date)
           Source commit ${{ github.sha }}
           "
         working-directory: pages
-        if: ${{ contains(env.CHANGES, 'alias.txt') }}
+        if: ${{ env.CHANGES != '' }}
       - run: git push
         working-directory: pages

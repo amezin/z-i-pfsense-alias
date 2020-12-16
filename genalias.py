@@ -34,7 +34,7 @@ def merge(addrs):
     return merged
 
 
-def run(dump_csv, output):
+def run(dump_csv, output, output_v6):
     reader = csv.reader(dump_csv, delimiter=';')
     next(reader)  # "Updated on ..."
 
@@ -63,14 +63,18 @@ def run(dump_csv, output):
     for net in merged_v4:
         print(net, file=output)
 
+    if output_v6 is None:
+        output_v6 = output
+
     for net in merged_v6:
-        print(net, file=output)
+        print(net, file=output_v6)
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('dump_csv', type=argparse.FileType('r', encoding='cp1251'))
     parser.add_argument('-o', '--output', type=argparse.FileType('w'), default=sys.stdout)
+    parser.add_argument('-6', '--output-v6', type=argparse.FileType('w'))
     run(**vars(parser.parse_args()))
 
 
