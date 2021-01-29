@@ -6,6 +6,9 @@ import ipaddress
 import sys
 
 
+csv.field_size_limit(sys.maxsize)
+
+
 def merge(addrs):
     addrs = sorted(addrs)
     if not addrs:
