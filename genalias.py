@@ -162,7 +162,7 @@ def main():
     parser.add_argument('dump_csv', type=argparse.FileType('r', encoding='cp1251'))
     parser.add_argument('-o', '--output', type=argparse.FileType('w'), default=sys.stdout)
     parser.add_argument('-6', '--output-v6', type=argparse.FileType('w'))
-    parser.add_argument('-j', '--dns-jobs', type=int, default=4)
+    parser.add_argument('-j', '--dns-jobs', type=int, default=0)
     run(**vars(parser.parse_args()))
 
 
