@@ -44,14 +44,20 @@ def merge(addrs):
 def resolve_dns(domain):
     addrs = set()
 
-    try:
-        for family, type, proto, canonname, sockaddr in socket.getaddrinfo(domain, 0):
-            addrs.add(sockaddr[0])
+    while True:
+        try:
+            for family, type, proto, canonname, sockaddr in socket.getaddrinfo(domain, 0):
+                addrs.add(sockaddr[0])
 
-    except Exception:
-        logging.exception("Can't resolve %r", domain)
+        except Exception as ex:
+            logging.error("Can't resolve %r: %s", domain, ex)
 
-    return addrs
+            if ex.args[0] == socket.EAI_AGAIN:
+                logging.info("Trying to resolve %r again after delay", domain)
+                time.sleep(0.5)
+                continue
+
+        return addrs
 
 
 def iter_field(field):
