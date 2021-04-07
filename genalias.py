@@ -3,10 +3,12 @@
 import argparse
 import concurrent.futures
 import csv
+import datetime
 import ipaddress
 import logging
 import socket
 import sys
+import time
 import urllib.parse
 
 
@@ -134,10 +136,23 @@ def run(dump_csv, output, output_v6, dns_jobs):
     if dns_jobs:
         logging.info('Total hostnames/domains: %d', len(domains))
 
+        domains_resolved = 0
+        start_timestamp = time.clock_gettime(time.CLOCK_MONOTONIC)
+
         with concurrent.futures.ThreadPoolExecutor(max_workers=dns_jobs) as executor:
             for resolved_addrs in executor.map(resolve_dns, domains):
                 for addr in resolved_addrs:
                     add_addr(addr)
+
+                domains_resolved += 1
+                progress_percent = domains_resolved / len(domains) * 100
+
+                current_timestamp = time.clock_gettime(time.CLOCK_MONOTONIC)
+                elapsed_seconds = current_timestamp - start_timestamp
+                remaining_seconds = elapsed_seconds / domains_resolved * (len(domains) - domains_resolved)
+                remaining = datetime.timedelta(seconds=remaining_seconds)
+
+                logging.info('Resolved %d%% = %d of %d domains, %s remaining', progress_percent, domains_resolved, len(domains), remaining)
 
         logging.info('Total unique subnets after DNS resolution: %d', len(addrs))
 
